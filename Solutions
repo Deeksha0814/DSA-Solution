@@ -1,0 +1,458 @@
+Q1. Swap 2 nodes of a singly linked list.
+
+#include <iostream>
+using namespace std;
+
+class Node {
+public:
+    int data;
+    Node* next;
+    Node(int val) {
+        data = val;
+        next = NULL;
+    }
+};
+
+Node* swapFunc(Node* head, int val1, int val2) {
+    if (val1 == val2) return head; // Same value
+
+    Node *prev1 = NULL, *curr1 = NULL;
+    Node *prev2 = NULL, *curr2 = NULL;
+    Node *curr = head;
+
+    while (curr != NULL) { // find val1
+        if (curr->data == val1) {
+            curr1 = curr;
+            break;
+        }
+        prev1 = curr;
+        curr = curr->next;
+    }
+
+    curr = head;
+
+    while (curr != NULL) { // find val2
+        if (curr->data == val2) {
+            curr2 = curr;
+            break;
+        }
+        prev2 = curr;
+        curr = curr->next;
+    }
+
+    if (curr1 == NULL || curr2 == NULL) return head; // if either 1 or both not present
+
+    if (prev1 != NULL) {
+        prev1->next = curr2;
+    } else { 
+        head = curr2; // if val1 is head
+    }
+
+    if (prev2 != NULL) {
+        prev2->next = curr1;
+    } else {
+        head = curr1;  // if val2 is head
+    }
+
+    // Swap next pointers
+    Node* temp = curr2->next;
+    curr2->next = curr1->next;
+    curr1->next = temp;
+
+    return head;
+}
+
+void print(Node* curr) {
+    while (curr != NULL) {
+        cout << curr->data << " ";
+        curr = curr->next;
+    }
+    cout << endl;
+}
+
+int main() {
+
+    Node* head = new Node(9);
+    head->next = new Node(3);
+    head->next->next = new Node(2);
+    head->next->next->next = new Node(7);
+
+    head = swapFunc(head, 3, 2);
+    print(head);
+}
+--------------------------------------------------------------------------------------------------------------
+
+Q2. Create a function that returns the nth last element of a singly linked list.
+
+#include <bits/stdc++.h>
+using namespace std;
+
+struct Node {
+    int data;
+    Node* next;
+    Node(int val) {
+        data = val;
+        next = NULL;
+    }
+};
+
+int findNode(Node* head, int N) {
+    if (head == NULL || N <= 0) {
+        return -1;  
+    }
+
+    int totalLen = 0;
+    Node* temp = head;
+    while (temp != NULL) {
+        totalLen++;
+        temp = temp->next;
+    }
+
+    if (totalLen < N) {
+        return -1;
+    }
+
+    // find the (totalLen - N + 1)th node from the start
+    temp = head;
+    for (int i = 1; i < totalLen - N + 1; i++) {
+        temp = temp->next;
+    }
+
+    return temp->data; 
+}
+
+int main() {
+    Node* head = new Node(9);
+    head->next = new Node(3);
+    head->next->next = new Node(8);
+    head->next->next->next = new Node(4);
+
+    cout << findNode(head, 4); 
+}
+
+----------------------------------------------------------------------------------------------------
+
+Q3. Implement doubly linked list. 
+
+#include <iostream>
+using namespace std;
+
+struct Node {
+    int data;
+    Node* next;
+    Node* prev;
+    
+    Node(int val) {
+        data = val;
+        next = NULL;
+        prev = NULL;
+    }
+};
+
+class DoublyLinkedList {
+    Node* head;
+    Node* tail;
+
+public:
+    DoublyLinkedList() {
+        head = NULL;
+        tail = NULL;
+    }
+
+    void insertAtFront(int data) {
+        Node* newNode = new Node(data);
+        if (head == NULL) {
+            head = tail = newNode; // If the list is empty, head and tail point to the new node
+        } else {
+            newNode->next = head;
+            head->prev = newNode;
+            head = newNode; // Make newNode -> head
+        }
+    }
+
+    void insertAtEnd(int data) {
+        Node* newNode = new Node(data);
+        if (tail == NULL) {
+            head = tail = newNode; // If the list is empty, head and tail point to the new node
+        } else {
+            tail->next = newNode;
+            newNode->prev = tail;
+            tail = newNode; // POint tail to the new node
+        }
+    }
+
+    void deleteFromFront() {
+        if (head == NULL) {
+            cout << "List is empty" << endl;
+            return;
+        }
+        Node* temp = head;
+        head = head->next;
+        if (head != NULL) {
+            head->prev = NULL;
+        } else {
+            tail = NULL; // If the list becomes empty
+        }
+        delete temp;
+    }
+
+    void deleteFromEnd() {
+        if (tail == NULL) {
+            cout << "List is empty" << endl;
+            return;
+        }
+        Node* temp = tail;
+        tail = tail->prev;
+        if (tail != NULL) {
+            tail->next = NULL;
+        } else {
+            head = NULL; // If the list becomes empty
+        }
+        delete temp;
+    }
+
+    // print list from head to tail
+    void displayFromHead() {
+        if (head == NULL) {
+            cout << "List is empty." << endl;
+            return;
+        }
+        Node* temp = head;
+        while (temp != NULL) {
+            cout << temp->data << " ";
+            temp = temp->next;
+        }
+        cout << endl;
+    }
+
+    // print list from tail to head
+    void displayFromTail() {
+        if (tail == NULL) {
+            cout << "List is empty." << endl;
+            return;
+        }
+        Node* temp = tail;
+        while (temp != NULL) {
+            cout << temp->data << " ";
+            temp = temp->prev;
+        }
+        cout << endl;
+    }
+
+    // search for a value in list
+    bool search(int key) {
+        Node* temp = head;
+        while (temp != NULL) {
+            if (temp->data == key) {
+                return true;
+            }
+            temp = temp->next;
+        }
+        return false;
+    }
+
+    // Destructor to delete all nodes and prevent memory leaks
+    ~DoublyLinkedList() {
+        while (head != NULL) {
+            deleteFromFront();
+        }
+    }
+    
+};
+
+int main() {
+    DoublyLinkedList list;
+
+    list.insertAtFront(1);
+    list.insertAtEnd(2);
+    list.insertAtFront(5);
+    list.insertAtEnd(8);
+    
+    cout << "List from head to tail: ";
+    list.displayFromHead();  
+
+    cout << "List from tail to head: ";
+    list.displayFromTail();  
+}
+
+---------------------------------------------------------------------------------------------------------
+
+Q4. Peek at the following queue, what would it return and what would new queue look like from back to front.
+
+#include <iostream>
+#include <queue>
+#include <stack>
+using namespace std;
+
+
+void processQueue(){
+    queue<string>q;
+    q.push("charlie");
+    q.push("Bob");
+    q.push("Ann");
+    
+    cout<<"Peeked value: " << q.front() << endl;
+    
+    stack<string> s;
+    while(!q.empty()){
+        s.push(q.front());
+        q.pop();
+    }
+    
+    cout<< "Queue from back to front: ";
+    while(!s.empty()){
+        cout<< s.top() <<" ";
+        s.pop();
+    }
+    cout<<endl;
+}
+
+int main() {
+    processQueue();
+}
+
+---------------------------------------------------------------------------------------------------------
+
+
+Q6. Write for code for peek and implemention of stack. 
+
+#include <iostream>
+using namespace std;
+
+class Stack{
+private:
+    int arr[100];
+    int top;
+    
+public: 
+    Stack(){
+        top = -1;
+    }
+    
+    void push(int val){
+        if(top >= 99){
+            cout<<"Stack overflow\n";
+            return;
+        }
+        arr[++top] = val;
+    }
+    
+    int pop(){
+        if(top<0){
+            cout<<"Stack Underflow\n";
+            return -1;
+        }
+        return arr[top--];
+    }
+    
+    int peek(){
+        if(top<0){
+            cout<<"Stack is empty\n";
+            return -1;
+        }
+        return arr[top];
+    }
+    
+    void display(){
+        cout<<"Stack top to bottom: ";
+        for(int i=top;i>=0;--i){
+            cout<<arr[i]<<" ";
+        }
+        cout<<endl;
+    }
+};
+
+int main() {
+    Stack s;
+    s.push(50);
+    s.push(60);
+    s.push(55);
+    
+    cout<<"Top value (Peeked): "<<s.peek()<<endl;
+    cout<<"Stack after peeking:\n";
+    s.display();
+}
+
+--------------------------------------------------------------------------------------------------------
+
+Q9. Create Edge, Vertex, and Graph classes to implement a variety of graphs. 
+
+#include <iostream>
+#include <vector>
+using namespace std;
+
+class Vertex {
+public:
+    int id;
+    
+    Vertex(int id){
+        this->id = id;
+    }
+};
+
+class Edge {
+public:
+    Vertex* src;
+    Vertex* dest;
+    
+    Edge(Vertex* s,Vertex* d){
+        this->src = s;
+        this->dest = d;
+    }
+};
+
+class Graph {
+private:
+    vector<Vertex*> vertices;
+    vector<Edge*> edges;
+    
+public:
+
+    void addVertex(int id){
+        vertices.push_back(new Vertex(id));
+    }
+    
+    void addEdge(int srcId, int destId){
+        Vertex* src = NULL;
+        Vertex* dest = NULL;
+        
+        for(Vertex* v : vertices){
+            if(v->id == srcId)  src = v;
+            if(v->id == destId) dest = v;
+        }
+        
+        if(src && dest){
+            edges.push_back(new Edge(src,dest));
+        }
+    }
+    
+    void display(){
+        cout<<"Graph Edges:\n";
+        for(Edge* e : edges){
+            cout<< e->src->id << " ->" << e->dest->id << endl;
+        }
+    }
+};
+
+int main() {
+    Graph g;
+    g.addVertex(1);
+    g.addVertex(2);
+    g.addVertex(3);
+    g.addVertex(4);
+    g.addVertex(5);
+    
+    g.addEdge(1,2);
+    g.addEdge(2,3);
+    g.addEdge(2,4);
+    g.addEdge(4,5);
+    g.addEdge(5,3);
+    
+    g.display();
+}
+
+
+
+
+
+  
